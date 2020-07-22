@@ -16,6 +16,7 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import { updateUserList, filterUsers } from "actions/UserManagement";
 import { CSVLink } from "react-csv";
 
+/* #region  UserManagement Table Headers */
 const columns = [
   { id: "name", label: "Name", minWidth: 170, align: "center" },
   { id: "code", label: "ISO\u00a0Code", minWidth: 100, align: "center" },
@@ -56,6 +57,7 @@ const columns = [
     format: (value) => value.toFixed(2),
   },
 ];
+/* #endregion */
 
 /* #region  Table Header Sorter */
 
