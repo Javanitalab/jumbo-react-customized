@@ -15,6 +15,11 @@ import TextField from "@material-ui/core/TextField";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { updateUserList, filterUsers } from "actions/UserManagement";
 import { CSVLink } from "react-csv";
+import EditIcon from "@material-ui/icons/EditOutlined";
+import DoneIcon from "@material-ui/icons/DoneAllTwoTone";
+import RevertIcon from "@material-ui/icons/NotInterestedOutlined";
+import IconButton from "@material-ui/core/IconButton";
+import Input from "@material-ui/core/Input";
 
 /* #region  UserManagement Table Headers */
 const columns = [
@@ -42,19 +47,9 @@ const columns = [
     format: (value) => value.toFixed(2),
   },
   {
-    id: "delete",
-    label: "Delete",
-    minWidth: 50,
-    align: "center",
-    format: (value) => value.toFixed(2),
-  },
-
-  {
-    id: "edit",
-    label: "Edit",
-    minWidth: 50,
-    align: "center",
-    format: (value) => value.toFixed(2),
+    id: "action",
+    label: "Actions",
+    disablePadding: true,
   },
 ];
 /* #endregion */
@@ -90,7 +85,6 @@ function stableSort(array, comparator) {
 function EnhancedTableHead(props) {
   const { classes, order, orderBy, onRequestSort, columns } = props;
   const createSortHandler = (property) => {
-    console.log(property);
     onRequestSort(property);
   };
 
@@ -104,7 +98,7 @@ function EnhancedTableHead(props) {
             padding={headCell.disablePadding ? "none" : "default"}
             sortDirection={orderBy === headCell.id ? order : false}
           >
-            {headCell.id === "edit" || headCell.id === "delete" ? (
+            {headCell.id === "action" ? (
               headCell.label
             ) : (
               <TableSortLabel
@@ -112,7 +106,6 @@ function EnhancedTableHead(props) {
                 active={orderBy === headCell.id}
                 direction={orderBy === headCell.id ? order : "asc"}
                 onClick={(headcell) => {
-                  console.log(headcell.target.id);
                   createSortHandler(headcell.target.id);
                 }}
               >
@@ -137,13 +130,14 @@ export class UserManagement extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-       a= "hossein",
       filter: { text1: "", text2: "", text3: "" },
       showEditModal: false,
       orderBy: "name",
       order: "asc",
       setOrderBy: "name",
       setOrder: "asc",
+      previous: {},
+      setPrevious: {},
     };
   }
 
@@ -205,8 +199,9 @@ export class UserManagement extends React.Component {
     /* #endregion */
 
     /* #region  state actions */
+
     const handleChangePage = (event, newPage) => {
-      setPage(newPage);
+      this.state.setPage = newPage;
     };
 
     const handleRequestSort = (property) => {
@@ -215,11 +210,13 @@ export class UserManagement extends React.Component {
     };
 
     const handleChangeRowsPerPage = (event) => {
-      setRowsPerPage(+event.target.value);
-      setPage(0);
+      this.state.setRowsPerPage = +event.target.value;
+      this.state.setPage = 0;
     };
 
-    /* #endregion */ var users;
+    /* #endregion */
+
+    var users;
 
     if (this.props.users) users = this.props.users;
     else users = [];
@@ -289,24 +286,21 @@ export class UserManagement extends React.Component {
                 users,
                 getComparator(this.state.order, this.state.orderBy)
               ).map((row) => {
-                row["edit"] = "hi";
-                row["delete"] = "bye";
                 return (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
+                  <TableRow>
                     {columns.map((column) => {
                       const value = row[column.id];
-                      return (
-                        <TableCell key={column.id} align={column.align}>
+                       return column["id"] !== "action" ?
+                       (<TableCell key={column.id} align={column.align}>
                           {column.format && typeof value === "number"
                             ? column.format(value)
                             : value}
-                        </TableCell>
-                      );
+                        </TableCell>)
+                       : (null)
                     })}
                   </TableRow>
                 );
               })}
-              }
             </TableBody>
           </Table>
         </TableContainer>
@@ -327,7 +321,6 @@ export class UserManagement extends React.Component {
 const mapStateToProps = ({ userFilter }) => {
   const { users } = userFilter;
 
-  console.log(userFilter);
   return { users };
 };
 

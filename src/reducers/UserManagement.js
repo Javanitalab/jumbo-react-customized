@@ -53,7 +53,7 @@ export default (state = INIT_STATE, action) => {
       };
     }
     case UPDATE_USER_LIST: {
-      return {
+          return {
         ...state,
         loader: true,
         users: action.payload,
