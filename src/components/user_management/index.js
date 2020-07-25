@@ -15,11 +15,12 @@ import TextField from "@material-ui/core/TextField";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { updateUserList, filterUsers } from "actions/UserManagement";
 import { CSVLink } from "react-csv";
-import EditIcon from "@material-ui/icons/EditOutlined";
 import DoneIcon from "@material-ui/icons/DoneAllTwoTone";
 import RevertIcon from "@material-ui/icons/NotInterestedOutlined";
 import IconButton from "@material-ui/core/IconButton";
 import Input from "@material-ui/core/Input";
+import EditUser from "./EditUser"
+import DeleteUser from "./DeleteUser"
 
 /* #region  UserManagement Table Headers */
 const columns = [
@@ -73,6 +74,10 @@ function getComparator(order, orderBy) {
 }
 
 function stableSort(array, comparator) {
+  console.log(Array.isArray(array))
+  
+  if(!Array.isArray(array))
+    return [{}];
   const stabilizedThis = array.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);
@@ -202,6 +207,7 @@ export class UserManagement extends React.Component {
 
     const handleChangePage = (event, newPage) => {
       this.state.setPage = newPage;
+      alert('handleChangePage')
     };
 
     const handleRequestSort = (property) => {
@@ -212,6 +218,8 @@ export class UserManagement extends React.Component {
     const handleChangeRowsPerPage = (event) => {
       this.state.setRowsPerPage = +event.target.value;
       this.state.setPage = 0;
+      alert('handleChangeRowsPerPage')
+
     };
 
     /* #endregion */
@@ -257,13 +265,17 @@ export class UserManagement extends React.Component {
               this.setState({ text3: e.target.value });
             }}
           />
-          <input type="submit" value="Submit" />
-          <button>
+          <input type="submit" value="Submit"  onClick={(event)=>{
+            event.preventDefault()
+            alert('here');
+            this.props.filterUsers();
+          }}/>
+          { users.length>0 ? <button>
             {" "}
             <CSVLink filename="Users" data={users} enclosingCharacter={`'`}>
               CSV File
             </CSVLink>
-          </button>
+          </button> : null}
         </form>
 
         {loader && (
@@ -286,6 +298,7 @@ export class UserManagement extends React.Component {
                 users,
                 getComparator(this.state.order, this.state.orderBy)
               ).map((row) => {
+                if(users.length>0)
                 return (
                   <TableRow>
                     {columns.map((column) => {
@@ -296,7 +309,13 @@ export class UserManagement extends React.Component {
                             ? column.format(value)
                             : value}
                         </TableCell>)
-                       : (null)
+                       : (<div  style={{
+                        display: 'flex',
+                        align: 'center',
+                        paddingRight: "30%",
+                        paddingTop: "10%"
+                    
+                    }}><EditUser/> <DeleteUser/></div>)
                     })}
                   </TableRow>
                 );
@@ -307,7 +326,7 @@ export class UserManagement extends React.Component {
         <TablePagination
           rowsPerPageOptions={[10, 25, 100]}
           component="div"
-          count={users.length}
+          count={users.length>0 ? users.length : 0}
           rowsPerPage={rowsPerPage}
           page={page}
           onChangePage={handleChangePage}

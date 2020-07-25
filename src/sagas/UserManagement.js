@@ -9,13 +9,16 @@ const getUsers = async (payload) =>
       console.log(response);
       return response.data;
     })
-    .catch((error) => error);
+    .catch((error) => {
+      console.log(error);
+      return error});
 
 function* filterUsersRequest(payload) {
   try {
     const fetchedMail = yield call(getUsers, payload);
     yield put(updateUserList(fetchedMail));
   } catch (error) {
+    console.log('in catch filterUsersRequest')
     yield put(showErrorMessage(error));
   }
 }

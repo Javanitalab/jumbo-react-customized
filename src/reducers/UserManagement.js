@@ -65,6 +65,7 @@ export default (state = INIT_STATE, action) => {
         loader: false,
         alertMessage: action.payload,
         showMessage: true,
+        users: [],
       };
     }
 
