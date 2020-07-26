@@ -4,23 +4,21 @@ import Paper from "@material-ui/core/Paper";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
+import TableRow from "@material-ui/core/TableRow";
 import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableSortLabel from "@material-ui/core/TableSortLabel";
 import TablePagination from "@material-ui/core/TablePagination";
-import TableRow from "@material-ui/core/TableRow";
 import IntlMessages from "util/IntlMessages";
 import { connect } from "react-redux";
 import TextField from "@material-ui/core/TextField";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { updateUserList, filterUsers } from "actions/UserManagement";
 import { CSVLink } from "react-csv";
-import DoneIcon from "@material-ui/icons/DoneAllTwoTone";
-import RevertIcon from "@material-ui/icons/NotInterestedOutlined";
-import IconButton from "@material-ui/core/IconButton";
-import Input from "@material-ui/core/Input";
-import EditUser from "./EditUser"
-import DeleteUser from "./DeleteUser"
+import { slideDown, slideUp } from './TableAnimation';
+import ToggleTableRow from "./ToggleTableRow"
+import EditUser from "./EditUser";
+import DeleteUser from "./DeleteUser";
 
 /* #region  UserManagement Table Headers */
 const columns = [
@@ -74,10 +72,9 @@ function getComparator(order, orderBy) {
 }
 
 function stableSort(array, comparator) {
-  console.log(Array.isArray(array))
-  
-  if(!Array.isArray(array))
-    return [{}];
+  console.log(Array.isArray(array));
+
+  if (!Array.isArray(array)) return [{}];
   const stabilizedThis = array.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);
@@ -143,7 +140,27 @@ export class UserManagement extends React.Component {
       setOrder: "asc",
       previous: {},
       setPrevious: {},
+      expanded: false
     };
+  }
+
+  toggleExpander = (e) => {
+    if (e.target.type === 'checkbox') return;
+
+    if (!this.state.expanded) {
+      this.setState(
+        { expanded: true },
+        () => {
+          if (this.refs.expanderBody) {
+            slideDown(this.refs.expanderBody);
+          }
+        }
+      );
+    } else {
+      slideUp(this.refs.expanderBody, {
+        onComplete: () => { this.setState({ expanded: false }); }
+      });
+    }
   }
 
   render() {
@@ -207,7 +224,7 @@ export class UserManagement extends React.Component {
 
     const handleChangePage = (event, newPage) => {
       this.state.setPage = newPage;
-      alert('handleChangePage')
+      alert("handleChangePage");
     };
 
     const handleRequestSort = (property) => {
@@ -218,8 +235,7 @@ export class UserManagement extends React.Component {
     const handleChangeRowsPerPage = (event) => {
       this.state.setRowsPerPage = +event.target.value;
       this.state.setPage = 0;
-      alert('handleChangeRowsPerPage')
-
+      alert("handleChangeRowsPerPage");
     };
 
     /* #endregion */
@@ -265,17 +281,23 @@ export class UserManagement extends React.Component {
               this.setState({ text3: e.target.value });
             }}
           />
-          <input type="submit" value="Submit"  onClick={(event)=>{
-            event.preventDefault()
-            alert('here');
-            this.props.filterUsers();
-          }}/>
-          { users.length>0 ? <button>
-            {" "}
-            <CSVLink filename="Users" data={users} enclosingCharacter={`'`}>
-              CSV File
-            </CSVLink>
-          </button> : null}
+          <input
+            type="submit"
+            value="Submit"
+            onClick={(event) => {
+              event.preventDefault();
+              alert("here");
+              this.props.filterUsers();
+            }}
+          />
+          {users.length > 0 ? (
+            <button>
+              {" "}
+              <CSVLink filename="Users" data={users} enclosingCharacter={`'`}>
+                CSV File
+              </CSVLink>
+            </button>
+          ) : null}
         </form>
 
         {loader && (
@@ -298,27 +320,10 @@ export class UserManagement extends React.Component {
                 users,
                 getComparator(this.state.order, this.state.orderBy)
               ).map((row) => {
-                if(users.length>0)
-                return (
-                  <TableRow>
-                    {columns.map((column) => {
-                      const value = row[column.id];
-                       return column["id"] !== "action" ?
-                       (<TableCell key={column.id} align={column.align}>
-                          {column.format && typeof value === "number"
-                            ? column.format(value)
-                            : value}
-                        </TableCell>)
-                       : (<div  style={{
-                        display: 'flex',
-                        align: 'center',
-                        paddingRight: "30%",
-                        paddingTop: "10%"
-                    
-                    }}><EditUser/> <DeleteUser/></div>)
-                    })}
-                  </TableRow>
-                );
+                if (users.length > 0)
+                  return (
+                    <ToggleTableRow columns={columns} row={row}/>                  
+                  );
               })}
             </TableBody>
           </Table>
@@ -326,7 +331,7 @@ export class UserManagement extends React.Component {
         <TablePagination
           rowsPerPageOptions={[10, 25, 100]}
           component="div"
-          count={users.length>0 ? users.length : 0}
+          count={users.length > 0 ? users.length : 0}
           rowsPerPage={rowsPerPage}
           page={page}
           onChangePage={handleChangePage}
