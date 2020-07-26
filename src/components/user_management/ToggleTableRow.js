@@ -36,38 +36,37 @@ export default class ToggleTableRow extends React.Component {
         {this.props.columns.map((column) => {
           const value = this.props.row[column.id];
           return column["id"] !== "action" ? (
-            <TableCell key={column.id} align={column.align}>
+            <TableCell
+              style={{ paddingLeft: "2.5%" }}
+              key={column.id}
+              align={column.align}
+            >
               {column.format && typeof value === "number"
                 ? column.format(value)
                 : value}
             </TableCell>
           ) : (
-            <Box
-            width="50px"
-              display="flex"
-              justifyContent="center"
-              m={1}
-              p={1}
-              bgcolor="background.paper"
+            <TableCell
+              style={{ paddingLeft: "2.5%" }}
+              key={column.id}
+              align={column.align}
             >
-              <Box p={1}>
-                <EditUser />
+              {" "}
+              <Box
+                display="flex"
+                justifyContent="center"
+                m={1}
+                
+                bgcolor="background.paper"
+              >
+                <Box >
+                  <EditUser />
+                </Box>
+                <Box >
+                  <DeleteUser />
+                </Box>
               </Box>
-              <Box p={1}>
-                <DeleteUser />
-              </Box>
-            </Box>
-
-            // <div
-            //   style={{
-            //     display: "flex",
-            //     align: "center",
-            //     paddingRight: "30%",
-            //     paddingTop: "10%",
-            //   }}
-            // >
-
-            // </div>
+            </TableCell>
           );
         })}
       </TableRow>,

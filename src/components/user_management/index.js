@@ -6,8 +6,7 @@ import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableRow from "@material-ui/core/TableRow";
 import TableContainer from "@material-ui/core/TableContainer";
-import TableHead from "@material-ui/core/TableHead";
-import TableSortLabel from "@material-ui/core/TableSortLabel";
+import TableHeader from "./TableHeader";
 import TablePagination from "@material-ui/core/TablePagination";
 import IntlMessages from "util/IntlMessages";
 import { connect } from "react-redux";
@@ -52,25 +51,6 @@ const columns = [
   },
 ];
 /* #endregion */
-
-/* #region  Table Header Sorter */
-
-function descendingComparator(a, b, orderBy) {
-  if (b[orderBy] < a[orderBy]) {
-    return -1;
-  }
-  if (b[orderBy] > a[orderBy]) {
-    return 1;
-  }
-  return 0;
-}
-
-function getComparator(order, orderBy) {
-  return order === "desc"
-    ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy);
-}
-
 function stableSort(array, comparator) {
   console.log(Array.isArray(array));
 
@@ -83,50 +63,22 @@ function stableSort(array, comparator) {
   });
   return stabilizedThis.map((el) => el[0]);
 }
-
-function EnhancedTableHead(props) {
-  const { classes, order, orderBy, onRequestSort, columns } = props;
-  const createSortHandler = (property) => {
-    onRequestSort(property);
-  };
-
-  return (
-    <TableHead>
-      <TableRow>
-        {columns.map((headCell) => (
-          <TableCell
-            key={headCell.id}
-            align={"center"}
-            padding={headCell.disablePadding ? "none" : "default"}
-            sortDirection={orderBy === headCell.id ? order : false}
-          >
-            {headCell.id === "action" ? (
-              headCell.label
-            ) : (
-              <TableSortLabel
-                id={headCell.id}
-                active={orderBy === headCell.id}
-                direction={orderBy === headCell.id ? order : "asc"}
-                onClick={(headcell) => {
-                  createSortHandler(headcell.target.id);
-                }}
-              >
-                {headCell.label}
-                {orderBy === headCell.id ? (
-                  <span className={classes.visuallyHidden}>
-                    {order === "" ? "" : ""}
-                  </span>
-                ) : null}
-              </TableSortLabel>
-            )}
-          </TableCell>
-        ))}
-      </TableRow>
-    </TableHead>
-  );
+function getComparator(order, orderBy) {
+  return order === "desc"
+    ? (a, b) => descendingComparator(a, b, orderBy)
+    : (a, b) => -descendingComparator(a, b, orderBy);
 }
 
-/* #endregion */
+function descendingComparator(a, b, orderBy) {
+  if (b[orderBy] < a[orderBy]) {
+    return -1;
+  }
+  if (b[orderBy] > a[orderBy]) {
+    return 1;
+  }
+  return 0;
+}
+
 
 export class UserManagement extends React.Component {
   constructor(props) {
@@ -212,7 +164,7 @@ export class UserManagement extends React.Component {
       },
       "& > *": {
         margin: theme.spacing(2),
-        width: "25ch",
+        width: "25px",
       },
       container: {
         maxHeight: 440,
@@ -305,9 +257,9 @@ export class UserManagement extends React.Component {
             <CircularProgress />
           </div>
         )}
-        <TableContainer className={classes.container}>
-          <Table>
-            <EnhancedTableHead
+        <TableContainer style={{marginTop:"5%"}}>
+          <Table >
+            <TableHeader
               classes={headerClassess}
               order={this.state.order}
               orderBy={this.state.orderBy}
