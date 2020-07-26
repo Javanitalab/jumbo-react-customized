@@ -7,17 +7,23 @@ import TableCell from "@material-ui/core/TableCell";
 import TableRow from "@material-ui/core/TableRow";
 import TableContainer from "@material-ui/core/TableContainer";
 import TableHeader from "./TableHeader";
-import TablePagination from "@material-ui/core/TablePagination";
+import TablePagination from "../TablePagination/TablePagination";
 import IntlMessages from "util/IntlMessages";
 import { connect } from "react-redux";
 import TextField from "@material-ui/core/TextField";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { updateUserList, filterUsers } from "actions/UserManagement";
 import { CSVLink } from "react-csv";
-import { slideDown, slideUp } from './TableAnimation';
-import ToggleTableRow from "./ToggleTableRow"
+import { slideDown, slideUp } from "./TableAnimation";
+import ToggleTableRow from "./ToggleTableRow";
 import EditUser from "./EditUser";
 import DeleteUser from "./DeleteUser";
+import { convertToPersianNumber } from "./PersianNumber";
+import "./TableFilter.css";
+import Grid from "@material-ui/core/Grid";
+import Button from "@material-ui/core/Button";
+import Icon from "@material-ui/core/Icon";
+import SaveIcon from "@material-ui/icons/Save";
 
 /* #region  UserManagement Table Headers */
 const columns = [
@@ -79,7 +85,6 @@ function descendingComparator(a, b, orderBy) {
   return 0;
 }
 
-
 export class UserManagement extends React.Component {
   constructor(props) {
     super(props);
@@ -92,28 +97,27 @@ export class UserManagement extends React.Component {
       setOrder: "asc",
       previous: {},
       setPrevious: {},
-      expanded: false
+      expanded: false,
     };
   }
 
   toggleExpander = (e) => {
-    if (e.target.type === 'checkbox') return;
+    if (e.target.type === "checkbox") return;
 
     if (!this.state.expanded) {
-      this.setState(
-        { expanded: true },
-        () => {
-          if (this.refs.expanderBody) {
-            slideDown(this.refs.expanderBody);
-          }
+      this.setState({ expanded: true }, () => {
+        if (this.refs.expanderBody) {
+          slideDown(this.refs.expanderBody);
         }
-      );
+      });
     } else {
       slideUp(this.refs.expanderBody, {
-        onComplete: () => { this.setState({ expanded: false }); }
+        onComplete: () => {
+          this.setState({ expanded: false });
+        },
       });
     }
-  }
+  };
 
   render() {
     /* #region  init const */
@@ -129,6 +133,15 @@ export class UserManagement extends React.Component {
     /* #endregion */
 
     /* #region Custome Styles */
+
+    const filterStyle = makeStyles((theme) => ({
+      root: {
+        "& > *": {
+          margin: theme.spacing(1),
+          width: "25ch",
+        },
+      },
+    }));
 
     const headerClassess = makeStyles((theme) => ({
       root: {
@@ -151,6 +164,17 @@ export class UserManagement extends React.Component {
         position: "absolute",
         top: 20,
         width: 1,
+      },
+    }));
+
+    const formStyles = makeStyles((theme) => ({
+      root: {
+        flexGrow: 1,
+      },
+      paper: {
+        padding: theme.spacing(1),
+        textAlign: "center",
+        color: theme.palette.text.secondary,
       },
     }));
 
@@ -200,7 +224,67 @@ export class UserManagement extends React.Component {
 
     return (
       <Paper className={classes.root}>
-        <form
+        <form style={{ marginRight: "5%" }}>
+          <TextField
+            style={{
+              margin: "3% 1% 2% 1%",
+            }}
+            id="outlined-basic"
+            label="Outlined"
+            variant="outlined"
+          />
+          <TextField
+            style={{
+              margin: "3% 1% 2% 1%",
+            }}
+            id="outlined-basic"
+            label="Outlined"
+            variant="outlined"
+          />
+          <TextField
+            style={{
+              margin: "3% 1% 2% 1%",
+            }}
+            id="outlined-basic"
+            label="Outlined"
+            variant="outlined"
+          />
+        </form>
+        <div style={{ marginRight: "5%" }}>
+          <Button
+            style={{
+              margin: "3% 1% 0 1%",
+              float: "right",
+            }}
+            variant="contained"
+            color="primary"
+            onClick={(event) => {
+              event.preventDefault();
+              alert("here");
+              this.props.filterUsers();
+            }}
+          >
+            Submit
+          </Button>
+
+          {users.length > 0 ? ( 
+            <Button
+              style={{
+                margin: "3% 1% 0 1%",
+              }}
+              variant="contained"
+              color="primary"
+              size="medium"
+              startIcon={<SaveIcon />}
+            >
+              <CSVLink  style={{color:"white"}} filename="Users" data={users} enclosingCharacter={`'`}>
+                CSV File
+              </CSVLink>
+            </Button>
+          ) : null}
+        </div>
+
+        {/* <form
           className={classes.form}
           noValidate
           autoComplete="off"
@@ -213,6 +297,7 @@ export class UserManagement extends React.Component {
             id="text1"
             label={<IntlMessages id="appModule.signin" />}
             variant="filled"
+            style={{ margin: "2% 1% 0 1%" }}
             onChange={(e) => {
               this.setState({ text1: e.target.value });
             }}
@@ -221,6 +306,7 @@ export class UserManagement extends React.Component {
             id="text2"
             label={<IntlMessages id="appModule.signin" />}
             variant="filled"
+            style={{ margin: "2% 1% 0 1%" }}
             onChange={(e) => {
               this.setState({ text2: e.target.value });
             }}
@@ -229,6 +315,7 @@ export class UserManagement extends React.Component {
             id="text3"
             label={<IntlMessages id="appModule.signin" />}
             variant="filled"
+            style={{ margin: "2% 1% 0 1%" }}
             onChange={(e) => {
               this.setState({ text3: e.target.value });
             }}
@@ -236,6 +323,7 @@ export class UserManagement extends React.Component {
           <input
             type="submit"
             value="Submit"
+            style={{ margin: "2% 1% 0 1%" }}
             onClick={(event) => {
               event.preventDefault();
               alert("here");
@@ -243,22 +331,21 @@ export class UserManagement extends React.Component {
             }}
           />
           {users.length > 0 ? (
-            <button>
-              {" "}
+            <button style={{ margin: "2% 1% 0 1%" }}>
               <CSVLink filename="Users" data={users} enclosingCharacter={`'`}>
                 CSV File
               </CSVLink>
             </button>
           ) : null}
-        </form>
+        </form> */}
 
         {loader && (
           <div className="loader-view">
             <CircularProgress />
           </div>
         )}
-        <TableContainer style={{marginTop:"5%"}}>
-          <Table >
+        <TableContainer style={{ marginTop: "5%" }}>
+          <Table>
             <TableHeader
               classes={headerClassess}
               order={this.state.order}
@@ -273,15 +360,13 @@ export class UserManagement extends React.Component {
                 getComparator(this.state.order, this.state.orderBy)
               ).map((row) => {
                 if (users.length > 0)
-                  return (
-                    <ToggleTableRow columns={columns} row={row}/>                  
-                  );
+                  return <ToggleTableRow columns={columns} row={row} />;
               })}
             </TableBody>
           </Table>
         </TableContainer>
         <TablePagination
-          rowsPerPageOptions={[10, 25, 100]}
+          rowsPerPageOptions={["10", "25", "100"]}
           component="div"
           count={users.length > 0 ? users.length : 0}
           rowsPerPage={rowsPerPage}
