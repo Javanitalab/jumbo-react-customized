@@ -83,7 +83,7 @@ function descendingComparator(a, b, orderBy) {
 export class UserManagement extends React.Component {
   constructor(props) {
     super(props);
-    console.log(filterStyle)
+    console.log(filterStyle);
     this.state = {
       filter: { text1: "", text2: "", text3: "" },
       showEditModal: false,
@@ -130,7 +130,6 @@ export class UserManagement extends React.Component {
 
     /* #region Custome Styles */
 
-
     const headerClassess = makeStyles((theme) => ({
       root: {
         width: "100%",
@@ -155,7 +154,6 @@ export class UserManagement extends React.Component {
       },
     }));
 
-
     const classes = makeStyles((theme) => ({
       root: {
         width: "100%",
@@ -172,6 +170,24 @@ export class UserManagement extends React.Component {
         maxHeight: 440,
       },
     }));
+
+    const formStyle = window.matchMedia("(min-width: 768px)").matches
+      ? {
+          Container: {
+            padding: "3% 5% 1% 5%",
+          },
+          Item: {
+            padding: "1% 1% 1% 1%",
+          },
+        }
+      : {
+          Container: {
+            padding: "5% 5% 5% 5%",
+          },
+          Item: {
+            padding: "1% 1% 1% 1%",
+          },
+        };
     /* #endregion */
 
     /* #region  state actions */
@@ -203,44 +219,47 @@ export class UserManagement extends React.Component {
     return (
       <Paper className={classes.root}>
         <div>
-        <div   className="Mine-Form-Container">
-            <Grid   container spacing={2  } alignItems="flex-end">
-              <Grid className="Mine-Form-Item"  item>
-                <TextField id="input-with-icon-grid" label="With a grid" />
-              </Grid>
-              <Grid className="Mine-Form-Item" item>
-                <TextField id="input-with-icon-grid" label="With a grid" />
-              </Grid>
-
-              <Grid className="Mine-Form-Item" item>
-                <TextField id="input-with-icon-grid" label="With a grid" />
-              </Grid>
-              <Grid className="Mine-Form-Item" item>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  size="medium"
-                  onClick={(event) => {
-                    event.preventDefault();
-                    alert("here");
-                    this.props.filterUsers();
-                  }}
-                >
-                  Submit
-                </Button>
-              </Grid>
-              <Grid className="Mine-Form-Item" item>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  size="large"
-                  startIcon={<SaveIcon />}
-                />
-              </Grid>
+          <Grid
+            style={formStyle.Container}
+            container
+            spacing={2}
+            alignItems="flex-end"
+          >
+            <Grid style={formStyle.Item} item>
+              <TextField id="input-with-icon-grid" label="With a grid" />
             </Grid>
-            </div>
-            </div>
-      
+            <Grid style={formStyle.Item} item>
+              <TextField id="input-with-icon-grid" label="With a grid" />
+            </Grid>
+
+            <Grid style={formStyle.Item} item>
+              <TextField id="input-with-icon-grid" label="With a grid" />
+            </Grid>
+            <Grid style={formStyle.Item} item>
+              <Button
+                variant="contained"
+                color="primary"
+                size="medium"
+                onClick={(event) => {
+                  event.preventDefault();
+                  alert("here");
+                  this.props.filterUsers();
+                }}
+              >
+                Submit
+              </Button>
+            </Grid>
+            <Grid style={formStyle.Item} item>
+              <Button
+                variant="contained"
+                color="primary"
+                size="large"
+                startIcon={<SaveIcon />}
+              />
+            </Grid>
+          </Grid>
+        </div>
+
         {/* <form
           className={classes.form}
           noValidate
