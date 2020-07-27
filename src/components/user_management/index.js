@@ -3,8 +3,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableRow from "@material-ui/core/TableRow";
 import TableContainer from "@material-ui/core/TableContainer";
 import TableHeader from "./TableHeader";
 import TablePagination from "../TablePagination/TablePagination";
@@ -16,14 +14,11 @@ import { updateUserList, filterUsers } from "actions/UserManagement";
 import { CSVLink } from "react-csv";
 import { slideDown, slideUp } from "./TableAnimation";
 import ToggleTableRow from "./ToggleTableRow";
-import EditUser from "./EditUser";
-import DeleteUser from "./DeleteUser";
-import { convertToPersianNumber } from "./PersianNumber";
-import "./TableFilter.css";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
 import Icon from "@material-ui/core/Icon";
 import SaveIcon from "@material-ui/icons/Save";
+import filterStyle from "../../assets/styles/TableFilter.css";
 
 /* #region  UserManagement Table Headers */
 const columns = [
@@ -88,6 +83,7 @@ function descendingComparator(a, b, orderBy) {
 export class UserManagement extends React.Component {
   constructor(props) {
     super(props);
+    console.log(filterStyle)
     this.state = {
       filter: { text1: "", text2: "", text3: "" },
       showEditModal: false,
@@ -134,14 +130,6 @@ export class UserManagement extends React.Component {
 
     /* #region Custome Styles */
 
-    const filterStyle = makeStyles((theme) => ({
-      root: {
-        "& > *": {
-          margin: theme.spacing(1),
-          width: "25ch",
-        },
-      },
-    }));
 
     const headerClassess = makeStyles((theme) => ({
       root: {
@@ -167,16 +155,6 @@ export class UserManagement extends React.Component {
       },
     }));
 
-    const formStyles = makeStyles((theme) => ({
-      root: {
-        flexGrow: 1,
-      },
-      paper: {
-        padding: theme.spacing(1),
-        textAlign: "center",
-        color: theme.palette.text.secondary,
-      },
-    }));
 
     const classes = makeStyles((theme) => ({
       root: {
@@ -224,66 +202,45 @@ export class UserManagement extends React.Component {
 
     return (
       <Paper className={classes.root}>
-        <form style={{ marginRight: "5%" }}>
-          <TextField
-            style={{
-              margin: "3% 1% 2% 1%",
-            }}
-            id="outlined-basic"
-            label="Outlined"
-            variant="outlined"
-          />
-          <TextField
-            style={{
-              margin: "3% 1% 2% 1%",
-            }}
-            id="outlined-basic"
-            label="Outlined"
-            variant="outlined"
-          />
-          <TextField
-            style={{
-              margin: "3% 1% 2% 1%",
-            }}
-            id="outlined-basic"
-            label="Outlined"
-            variant="outlined"
-          />
-        </form>
-        <div style={{ marginRight: "5%" }}>
-          <Button
-            style={{
-              margin: "3% 1% 0 1%",
-              float: "right",
-            }}
-            variant="contained"
-            color="primary"
-            onClick={(event) => {
-              event.preventDefault();
-              alert("here");
-              this.props.filterUsers();
-            }}
-          >
-            Submit
-          </Button>
+        <div>
+        <div   className="Mine-Form-Container">
+            <Grid   container spacing={2  } alignItems="flex-end">
+              <Grid className="Mine-Form-Item"  item>
+                <TextField id="input-with-icon-grid" label="With a grid" />
+              </Grid>
+              <Grid className="Mine-Form-Item" item>
+                <TextField id="input-with-icon-grid" label="With a grid" />
+              </Grid>
 
-          {users.length > 0 ? ( 
-            <Button
-              style={{
-                margin: "3% 1% 0 1%",
-              }}
-              variant="contained"
-              color="primary"
-              size="medium"
-              startIcon={<SaveIcon />}
-            >
-              <CSVLink  style={{color:"white"}} filename="Users" data={users} enclosingCharacter={`'`}>
-                CSV File
-              </CSVLink>
-            </Button>
-          ) : null}
-        </div>
-
+              <Grid className="Mine-Form-Item" item>
+                <TextField id="input-with-icon-grid" label="With a grid" />
+              </Grid>
+              <Grid className="Mine-Form-Item" item>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  size="medium"
+                  onClick={(event) => {
+                    event.preventDefault();
+                    alert("here");
+                    this.props.filterUsers();
+                  }}
+                >
+                  Submit
+                </Button>
+              </Grid>
+              <Grid className="Mine-Form-Item" item>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  size="large"
+                  startIcon={<SaveIcon />}
+                />
+              </Grid>
+            </Grid>
+            </div>
+            </div>
+      
         {/* <form
           className={classes.form}
           noValidate
@@ -344,7 +301,7 @@ export class UserManagement extends React.Component {
             <CircularProgress />
           </div>
         )}
-        <TableContainer style={{ marginTop: "5%" }}>
+        <TableContainer style={{ marginTop: "3%" }}>
           <Table>
             <TableHeader
               classes={headerClassess}

@@ -10,7 +10,7 @@ import {
 } from "react-notifications";
 import IntlMessages from "util/IntlMessages";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import LogoContent from "../assets/styles/signIn.css";
+import  "../assets/styles/signIn.css";
 import "../api/AuthApi";
 import {
   hideMessage,
