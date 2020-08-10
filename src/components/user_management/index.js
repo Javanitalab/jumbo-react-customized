@@ -19,38 +19,8 @@ import Button from "@material-ui/core/Button";
 import Icon from "@material-ui/core/Icon";
 import SaveIcon from "@material-ui/icons/Save";
 import filterStyle from "../../assets/styles/TableFilter.css";
-
+import SpringPopper from "./PersianCalendar";
 /* #region  UserManagement Table Headers */
-const columns = [
-  { id: "name", label: "Name", minWidth: 170, align: "center" },
-  { id: "code", label: "ISO\u00a0Code", minWidth: 100, align: "center" },
-  {
-    id: "population",
-    label: "Population",
-    minWidth: 170,
-    align: "center",
-    format: (value) => value.toLocaleString("en-US"),
-  },
-  {
-    id: "size",
-    label: "Size\u00a0(km\u00b2)",
-    minWidth: 170,
-    align: "center",
-    format: (value) => value.toLocaleString("en-US"),
-  },
-  {
-    id: "density",
-    label: "Density",
-    minWidth: 170,
-    align: "center",
-    format: (value) => value.toFixed(2),
-  },
-  {
-    id: "action",
-    label: "Actions",
-    disablePadding: true,
-  },
-];
 /* #endregion */
 function stableSort(array, comparator) {
   console.log(Array.isArray(array));
@@ -94,8 +64,57 @@ export class UserManagement extends React.Component {
       previous: {},
       setPrevious: {},
       expanded: false,
+      startDate: null,
+      desktopView: window.matchMedia("(max-width: 700px)").matches,
+      mobileView: window.matchMedia("(max-width: 260px)").matches,
+      columns:[
+        { id: "name", label: "Name", minWidth: 170, align: "center" ,showResponsive:true},
+        { id: "code", label: "ISO\u00a0Code", minWidth: 100, align: "center" ,showResponsive:true},
+        {
+          id: "population",
+          label: "Population",
+          minWidth: 170,
+          align: "center",
+          format: (value) => value.toLocaleString("en-US"),
+          showResponsive:false
+        },
+        {
+          id: "size",
+          label: "Size\u00a0(km\u00b2)",
+          minWidth: 170,
+          align: "center",
+          format: (value) => value.toLocaleString("en-US"),
+          showResponsive:false
+        },
+        {
+          id: "density",
+          label: "Density",
+          minWidth: 170,
+          align: "center",
+          format: (value) => value.toFixed(2),
+          showResponsive:false
+        },
+        {
+          id: "action",
+          label: "Actions",
+          disablePadding: true,
+          showResponsive:false
+        },
+      ] 
     };
+  
+    this.handleChangeStartDate=this.handleChangeStartDate.bind(this);
   }
+  
+
+  componentDidMount() {
+    const desktopHandler = e => this.setState({desktopView: e.desktopView});
+    const mobileHandler = e => this.setState({mobileView: e.mobileView});
+
+    window.matchMedia("(max-width: 700px)").addListener(desktopHandler);
+    window.matchMedia("(max-width: 260px)").addListener(mobileHandler);
+  }
+
 
   toggleExpander = (e) => {
     if (e.target.type === "checkbox") return;
@@ -115,8 +134,13 @@ export class UserManagement extends React.Component {
     }
   };
 
+  handleChangeStartDate(value) {
+    this.setState({ startDate: value });
+  }
+
   render() {
     /* #region  init const */
+
     const page = 0;
     const rowsPerPage = 10;
     const setRowsPerPage = 10;
@@ -171,21 +195,84 @@ export class UserManagement extends React.Component {
       },
     }));
 
-    const formStyle = window.matchMedia("(min-width: 768px)").matches
-      ? {
+    const formStyle = this.state.desktopView
+      ? this.state.mobileView
+        ? 
+        /* #region  Mobile View */
+
+          {
+            Container: {
+              padding: "3% 5% 1% 5%",
+            },
+            TextInput: {
+              padding: "1% 1% 1% 1%",
+              width: "100%",
+            },
+            SubmitButton: {
+              padding: "5% 2% 5% 0",
+              float: "left",
+              marginLeft: "25%",
+            },
+            CsvButton: {
+              // padding: "5% 2% 5% 0",
+              float: "left",
+              marginLeft:"25%"
+            },
+            Calendar: {
+              padding: "1% 1% 1% 1%",
+              // marginTop:"6.5%",
+              width: 200,
+            },
+          }
+        : /* #endregion */
+
+          /* #region  IPad View */
+
+          {
+            Container: {
+              padding: "3% 5% 1% 5%",
+            },
+            TextInput: {
+              padding: "1% 1% 1% 1%",
+              width: "100%",
+            },
+            SubmitButton: {
+              padding: "5% 2% 5% 0",
+              float: "left",
+              marginLeft: "25%",
+            },
+            CsvButton: {
+              padding: "5% 2% 5% 0",
+              float: "left",
+            },
+            Calendar: {
+              padding: "1% 1% 1% 1%",
+              // marginTop:"2.5%",
+              width: 200,
+            },
+          }
+      : /* #endregion */
+
+        /* #region  Desktop View */
+
+        {
           Container: {
-            padding: "3% 5% 1% 5%",
+            padding: "3% 5% 2% 5%",
+            display: "flex",
           },
-          Item: {
+          TextInput: {
             padding: "1% 1% 1% 1%",
           },
-        }
-      : {
-          Container: {
-            padding: "5% 5% 5% 5%",
+          SubmitButton: {
+            padding: "2% 1% 1% 1%",
           },
-          Item: {
+          CsvButton: {
+            padding: "2% 1% 1% 1%",
+          },
+          Calendar: {
             padding: "1% 1% 1% 1%",
+            // marginTop:"6.5%",
+            width: 200,
           },
         };
     /* #endregion */
@@ -219,23 +306,34 @@ export class UserManagement extends React.Component {
     return (
       <Paper className={classes.root}>
         <div>
-          <Grid
+          <div
             style={formStyle.Container}
             container
             spacing={2}
             alignItems="flex-end"
           >
-            <Grid style={formStyle.Item} item>
-              <TextField id="input-with-icon-grid" label="With a grid" />
-            </Grid>
-            <Grid style={formStyle.Item} item>
-              <TextField id="input-with-icon-grid" label="With a grid" />
-            </Grid>
+            <div style={formStyle.TextInput} item>
+              <TextField label="With a grid" style={{ width: "100%" }} />
+            </div>
+            <div style={formStyle.TextInput} item>
+              <TextField
+                id="input-with-icon-grid"
+                style={{ width: "100%" }}
+                label="With a grid"
+              />
+            </div>
+            <div style={formStyle.TextInput} item>
+              <TextField
+                id="input-with-icon-grid"
+                style={{ width: "100%" }}
+                label="With a grid"
+              />
+            </div>
 
-            <Grid style={formStyle.Item} item>
-              <TextField id="input-with-icon-grid" label="With a grid" />
-            </Grid>
-            <Grid style={formStyle.Item} item>
+            <div style={formStyle.TextInput} item>
+              <SpringPopper handleChangeDate={this.handleChangeStartDate} />
+            </div>
+            <div style={formStyle.SubmitButton} item>
               <Button
                 variant="contained"
                 color="primary"
@@ -248,16 +346,18 @@ export class UserManagement extends React.Component {
               >
                 Submit
               </Button>
-            </Grid>
-            <Grid style={formStyle.Item} item>
+            </div>
+            <div style={formStyle.CsvButton} item>
               <Button
                 variant="contained"
                 color="primary"
-                size="large"
+                size="medium"
                 startIcon={<SaveIcon />}
-              />
-            </Grid>
-          </Grid>
+              >
+                CSV
+              </Button>
+            </div>
+          </div>
         </div>
 
         {/* <form
@@ -327,16 +427,18 @@ export class UserManagement extends React.Component {
               order={this.state.order}
               orderBy={this.state.orderBy}
               onRequestSort={handleRequestSort}
-              columns={columns}
+              columns={this.state.columns}
             />
 
             <TableBody>
               {stableSort(
                 users,
                 getComparator(this.state.order, this.state.orderBy)
-              ).map((row) => {
+              ).map((row, index) => {
                 if (users.length > 0)
-                  return <ToggleTableRow columns={columns} row={row} />;
+                  return (
+                    <ToggleTableRow index={index} columns={this.state.columns} row={row} />
+                  );
               })}
             </TableBody>
           </Table>

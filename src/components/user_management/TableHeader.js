@@ -19,8 +19,10 @@ export default function EnhancedTableHead(props) {
     return (
       <TableHead>
         <TableRow>
-          {columns.map((headCell) => (
-            <TableCell
+          {columns.map((headCell) => {
+            if(!headCell.showResponsive && window.innerWidth < 768)
+              return;
+            return <TableCell
               key={headCell.id}
               align={"center"}
               padding={headCell.disablePadding ? "none" : "default"}
@@ -46,7 +48,7 @@ export default function EnhancedTableHead(props) {
                 </TableSortLabel>
               )}
             </TableCell>
-          ))}
+})}
         </TableRow>
       </TableHead>
     );

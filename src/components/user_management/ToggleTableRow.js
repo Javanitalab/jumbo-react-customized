@@ -30,10 +30,21 @@ export default class ToggleTableRow extends React.Component {
   };
 
   render() {
+    const rowBackgroudStyle =
+      this.props.index % 2 == 1
+        ? {
+            backgroundColor: "white",
+          }
+        : {
+            backgroundColor: "darkgray",
+          };
+
     var name = this.props.row["name"];
     return [
-      <TableRow onClick={this.toggleExpander}>
+      <TableRow style={rowBackgroudStyle} onClick={this.toggleExpander}>
         {this.props.columns.map((column) => {
+          if (!column.showResponsive && window.innerWidth < 768) return;
+
           const value = this.props.row[column.id];
           return column["id"] !== "action" ? (
             <TableCell
@@ -47,7 +58,7 @@ export default class ToggleTableRow extends React.Component {
             </TableCell>
           ) : (
             <TableCell
-              style={{ paddingLeft: "2.5%" }}
+              style={{ paddingLeft: "2.5%", backgroundColor: "transparent" }}
               key={column.id}
               align={column.align}
             >
@@ -55,14 +66,14 @@ export default class ToggleTableRow extends React.Component {
               <Box
                 display="flex"
                 justifyContent="center"
+                style={rowBackgroudStyle}
                 m={1}
-                
                 bgcolor="background.paper"
               >
-                <Box >
+                <Box>
                   <EditUser />
                 </Box>
-                <Box >
+                <Box>
                   <DeleteUser />
                 </Box>
               </Box>
